@@ -1,10 +1,10 @@
-import { Button, Col, Input, Row, Select, Space, Tag } from 'antd';
+import { Button, Col, Input, Row, Select, Space, Tag, Spin } from 'antd';
 import { SetStateAction, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { filterData } from '~/Redux/selector';
 import { useAppDispatch, useAppSelector } from '~/hooks/hooks';
 import Todo from '../Todo/Todo';
-import { Priority, TodoState, todoActions } from '../Todo/TodoSlice';
+import { Priority, TodoState, addNewTodo } from '../Todo/TodoSlice';
 
 function TodoList() {
   const [todoName, setTodoName] = useState<string>('');
@@ -12,7 +12,8 @@ function TodoList() {
   const dispatch = useAppDispatch();
 
   const todoData: TodoState[] = useAppSelector(filterData);
-  console.log('🚀 ~ TodoList ~ todoData:', todoData);
+
+  const spinning = useAppSelector((state) => state?.todoList?.status);
 
   const handlePriorityChange = (value: Priority) => {
     setPriority(value);
@@ -28,7 +29,7 @@ function TodoList() {
   function handledAddTodo() {
     todoName &&
       dispatch(
-        todoActions.addTodo({
+        addNewTodo({
           id: uuidv4(),
           completed: false,
           title: todoName,
@@ -44,19 +45,20 @@ function TodoList() {
       <Col
         span={24}
         style={{
-          height: 'calc(100% - 40px)',
-          overflowY: 'auto'
+          height: 'calc(100% - 40px)'
         }}
       >
-        {todoData?.map((item: TodoState) => (
-          <Todo
-            id={item?.id}
-            key={item?.id}
-            name={item?.title || ''}
-            prioriry={item?.priority || Priority.Medium}
-            status={item?.completed}
-          />
-        ))}
+        <Spin style={{ justifyContent: 'center' }} spinning={spinning}>
+          {todoData?.map((item: TodoState) => (
+            <Todo
+              id={item?.id}
+              key={item?.id}
+              name={item?.title || ''}
+              priority={item?.priority || Priority.Medium}
+              status={item?.completed}
+            />
+          ))}
+        </Spin>
       </Col>
       <Col span={24}>
         <Space.Compact style={{ display: 'flex' }}>

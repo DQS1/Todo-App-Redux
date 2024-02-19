@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export type FiltersState = {
   search: string;
   status: Status;
-  priority: string[];
+  priorities: string[];
 };
 
 export enum Status {
@@ -15,7 +15,7 @@ export enum Status {
 const initialState: FiltersState = {
   search: '',
   status: Status.All,
-  priority: []
+  priorities: []
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,7 +52,7 @@ const filtersSlice = createSlice({
       state.status = action?.payload;
     },
     priorityFilterChange(state, action) {
-      state.priority = action?.payload;
+      state.priorities = action?.payload;
     }
   }
 });

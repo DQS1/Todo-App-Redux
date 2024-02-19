@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 export type TodoState = {
   id: string;
@@ -13,21 +13,7 @@ export enum Priority {
   Low = 'Low'
 }
 
-const initialState: TodoState[] = [
-  {
-    id: '1',
-    title: 'Learn Yoga',
-    completed: false,
-    priority: Priority.High
-  },
-  { id: '2', title: 'Learn React', completed: true, priority: Priority.Medium },
-  {
-    id: '3',
-    title: 'Learn Javascript',
-    completed: false,
-    priority: Priority.Low
-  }
-];
+const todosData: TodoState[] = [];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // const TodoReducer = (state = initState, action: any) => {
@@ -47,18 +33,71 @@ const initialState: TodoState[] = [
 
 const todoSlice = createSlice({
   name: 'todoList',
-  initialState,
+  initialState: { status: false, todos: todosData },
   reducers: {
-    addTodo(state, action) {
-      state.push(action?.payload);
-    },
-    statusTodoChange(state, action) {
-      const currentTodo = state?.find((todo) => todo?.id === action?.payload);
-      currentTodo && (currentTodo.completed = !currentTodo.completed);
-    }
+    // addTodo(state, action) {
+    //   state?.todos?.push(action?.payload);
+    // },
+    // statusTodoChange(state, action) {
+    //   const currentTodo = state?.todos?.find(
+    //     (todo) => todo?.id === action?.payload
+    //   );
+    //   currentTodo && (currentTodo.completed = !currentTodo.completed);
+    // }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTodos.pending, (state) => {
+        state.status = true;
+      })
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.status = false;
+        state.todos = action?.payload;
+      })
+      .addCase(addNewTodo.fulfilled, (state, action) => {
+        state?.todos?.push(action?.payload);
+      })
+      .addCase(updateTodo.fulfilled, (state, action) => {
+        const currentTodo = state?.todos?.find(
+          (todo) => todo?.id === action?.payload?.id
+        );
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        currentTodo && (currentTodo.completed = !currentTodo.completed);
+      });
   }
 });
 
 const { actions, reducer } = todoSlice;
+
+export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
+  const res = await fetch('/api/todos');
+  const data = await res.json();
+  return data.todos;
+});
+
+export const addNewTodo = createAsyncThunk(
+  'todos/addNewTodo',
+  async (newTodo) => {
+    const res = await fetch('/api/todos', {
+      method: 'POST',
+      body: JSON.stringify(newTodo)
+    });
+    const data = await res.json();
+    return data.todos;
+  }
+);
+
+export const updateTodo = createAsyncThunk(
+  'todos/updateTodo',
+  async (idTodo) => {
+    const res = await fetch('/api/updateTodo', {
+      method: 'POST',
+      body: JSON.stringify(idTodo)
+    });
+
+    const data = await res.json();
+    return data.todos;
+  }
+);
 
 export { actions as todoActions, reducer as todoReducer };

@@ -1,7 +1,7 @@
 import { Checkbox, Row, Tag } from 'antd';
 import { useState } from 'react';
 import { useAppDispatch } from '~/hooks/hooks';
-import { todoActions } from './TodoSlice';
+import { fetchTodos, updateTodo } from './TodoSlice';
 
 export type PriorityLevels = {
   High: string;
@@ -19,19 +19,18 @@ const priorityLevels: PriorityLevels = {
 interface propsType {
   id: string;
   name: string;
-  prioriry: string;
+  priority: string;
   status: boolean;
 }
 
-function Todo({ id, name, prioriry, status }: propsType) {
+function Todo({ id, name, priority, status }: propsType) {
   const dispatch = useAppDispatch();
   const [checked, setChecked] = useState(status);
 
   const toggleCheckbox = () => {
-    console.log('🚀 ~ id:', id);
-
     setChecked(!checked);
-    dispatch(todoActions.statusTodoChange(id));
+    dispatch(updateTodo(id));
+    // dispatch(fetchTodos());
   };
   return (
     <Row
@@ -50,8 +49,8 @@ function Todo({ id, name, prioriry, status }: propsType) {
       <Checkbox checked={status} onChange={toggleCheckbox}>
         {name}
       </Checkbox>
-      <Tag color={priorityLevels[prioriry]} style={{ margin: 0 }}>
-        {prioriry}
+      <Tag color={priorityLevels[priority]} style={{ margin: 0 }}>
+        {priority}
       </Tag>
     </Row>
   );

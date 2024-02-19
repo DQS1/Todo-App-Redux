@@ -3,7 +3,7 @@ import { TodoState } from '~/components/Todo/TodoSlice';
 import { RootState } from './store';
 import { Status } from '~/components/Filters/FilterSlice';
 
-export const getTodoList = (state: RootState) => state?.todoList;
+export const getTodoList = (state: RootState) => state?.todoList?.todos;
 export const getFilter = (state: RootState) => state?.filters;
 
 export const filterData = createSelector(
@@ -11,36 +11,24 @@ export const filterData = createSelector(
   (todoList, filterData) => {
     return todoList?.filter((todo: TodoState) => {
       if (filterData?.status === Status.All) {
-        return filterData?.priority?.length
+        return filterData?.priorities?.length
           ? todo.title
               ?.toLowerCase()
               .includes(filterData?.search?.toLowerCase()) &&
-              filterData?.priority?.includes(todo?.priority)
+              filterData?.priorities?.includes(todo?.priority)
           : todo?.title
               ?.toLowerCase()
               .includes(filterData?.search?.toLowerCase());
       }
-      return filterData?.status === Status.Completed
-        ? filterData?.priority?.length
-          ? todo?.completed &&
-            filterData?.priority?.includes(todo?.priority) &&
-            todo.title
-              ?.toLowerCase()
-              .includes(filterData?.search?.toLowerCase())
-          : todo?.completed &&
-            todo.title
-              ?.toLowerCase()
-              .includes(filterData?.search?.toLowerCase())
-        : filterData?.priority?.length
-          ? !todo?.completed &&
-            filterData?.priority?.includes(todo?.priority) &&
-            todo.title
-              ?.toLowerCase()
-              .includes(filterData?.search?.toLowerCase())
-          : !todo?.completed &&
-            todo.title
-              ?.toLowerCase()
-              .includes(filterData?.search?.toLowerCase());
+      return (
+        todo.title?.toLowerCase().includes(filterData?.search?.toLowerCase()) &&
+        (filterData?.status === Status.Completed
+          ? todo.completed
+          : !todo.completed) &&
+        (filterData?.priorities.length
+          ? filterData?.priorities.includes(todo.priority)
+          : true)
+      );
     });
   }
 );
