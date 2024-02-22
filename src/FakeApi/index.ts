@@ -1,4 +1,23 @@
-import { createServer, Model } from 'miragejs';
+import { createServer, Model, Registry } from 'miragejs';
+import { FactoryDefinition, ModelDefinition } from 'miragejs/-types';
+import Schema from 'miragejs/orm/schema';
+import { Priority } from '~/components/Todo/TodoSlice';
+
+type TodoState = {
+  id: string;
+  title: string;
+  completed: boolean;
+  priority: Priority;
+};
+
+type AppRegistry = Registry<
+  { todos: ModelDefinition<TodoState> },
+  {
+    todo: FactoryDefinition<TodoState>;
+  }
+>;
+
+type AppSchema = Schema<AppRegistry>;
 
 export function setupSever() {
   createServer({
@@ -7,17 +26,17 @@ export function setupSever() {
     },
     routes() {
       this.get('/api/todos', (schema) => {
-        return schema.todos.all();
+        return schema.all('todos');
       });
       this.post('/api/todos', (schema, request) => {
         const payload = JSON.parse(request.requestBody);
 
-        return schema.todos.create(payload);
+        return schema.create('todos', payload);
       });
-      this.post('/api/updateTodo', (schema, request) => {
+      this.post('/api/updateTodo', (schema: AppSchema, request) => {
         const id = JSON.parse(request.requestBody);
-        const currentTodo = schema.todos.find(id);
-        currentTodo.update({ completed: !currentTodo.completed });
+        const currentTodo = schema.find('todos', id);
+        currentTodo?.update({ completed: !currentTodo?.completed });
         return currentTodo;
       });
     }

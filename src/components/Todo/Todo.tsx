@@ -30,7 +30,6 @@ function Todo({ id, name, priority, status }: propsType) {
   const toggleCheckbox = () => {
     setChecked(!checked);
     dispatch(updateTodo(id));
-    // dispatch(fetchTodos());
   };
   return (
     <Row

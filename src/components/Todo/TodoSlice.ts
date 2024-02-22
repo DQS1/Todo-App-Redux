@@ -77,7 +77,7 @@ export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
 
 export const addNewTodo = createAsyncThunk(
   'todos/addNewTodo',
-  async (newTodo) => {
+  async (newTodo: TodoState) => {
     const res = await fetch('/api/todos', {
       method: 'POST',
       body: JSON.stringify(newTodo)
@@ -89,7 +89,7 @@ export const addNewTodo = createAsyncThunk(
 
 export const updateTodo = createAsyncThunk(
   'todos/updateTodo',
-  async (idTodo) => {
+  async (idTodo: string) => {
     const res = await fetch('/api/updateTodo', {
       method: 'POST',
       body: JSON.stringify(idTodo)
