@@ -27,15 +27,13 @@ function TodoList() {
   };
 
   function handledAddTodo() {
-    todoName &&
-      dispatch(
-        addNewTodo({
-          id: uuidv4(),
-          completed: false,
-          title: todoName,
-          priority: priority ?? Priority.Medium
-        })
-      );
+    const data = {
+      id: uuidv4(),
+      completed: false,
+      title: todoName,
+      priority: priority ?? Priority.Medium
+    };
+    todoName && dispatch(addNewTodo(data));
     setPriority(Priority.Medium);
     setTodoName('');
   }

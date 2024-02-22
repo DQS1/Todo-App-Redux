@@ -1,7 +1,7 @@
 import { Checkbox, Row, Tag } from 'antd';
 import { useState } from 'react';
 import { useAppDispatch } from '~/hooks/hooks';
-import { fetchTodos, updateTodo } from './TodoSlice';
+import { updateTodo } from './TodoSlice';
 
 export type PriorityLevels = {
   High: string;
